@@ -469,17 +469,6 @@
   }
 
   function loadData() {
-    // Demo data in case the API is not available
-    const fallbackData = {
-      slider: [
-        {image: "https://i.ibb.co/Kj8tsBm/free-fire-diamonds-1.jpg", url: "#"},
-        {image: "https://i.ibb.co/M1j3q2Z/free-fire-diamonds-2.jpg", url: "#"},
-        {image: "https://i.ibb.co/QdnwWtP/free-fire-diamonds-3.jpg", url: "#"}
-      ],
-      videoId: "WHwQGyn8KI8", // Sample Free Fire video
-      url: "#"
-    };
-    
     fetch('https://script.google.com/macros/s/AKfycbxZcHDFs_lSzqR_NtCYwOvm9-lo1J9m8LUOWUcf8eZKFWrgQlMtEt_3bwoe1E8GJtMV/exec')
       .then(res => res.json())
       .then(data => {
@@ -489,20 +478,16 @@
         initializePage()
       })
       .catch(err => {
-        console.log("Using fallback data")
-        sliderData = fallbackData.slider
-        videoId = fallbackData.videoId
-        videoUrl = fallbackData.url
-        initializePage()
+        console.error("Failed to load data", err)
       })
   }
-  
+
   function initializePage() {
     updateSlide()
-    
+
     const dotContainer = document.getElementById("dotContainer")
     dotContainer.innerHTML = ''
-    
+
     sliderData.forEach((_, i) => {
       const dot = document.createElement("span")
       dot.className = i === 0 ? "dot active" : "dot"
@@ -512,21 +497,21 @@
       }
       dotContainer.appendChild(dot)
     })
-    
+
     setInterval(() => {
       currentSlide = (currentSlide + 1) % sliderData.length
       updateSlide()
     }, 4000)
-    
+
     document.getElementById("clickHereBtn").onclick = () => {
       window.location.href = videoUrl
     }
-    
+
     setTimeout(() => {
       document.getElementById("loader").style.display = "none"
       document.getElementById("mainContent").style.display = "block"
     }, 2000)
-    
+
     if (typeof YT !== "undefined" && YT && YT.Player) {
       loadVideo()
     }
@@ -539,7 +524,8 @@
         autoplay: 1,
         controls: 1,
         modestbranding: 1,
-        rel: 0
+        rel: 0,
+        mute: 1
       },
       events: {
         onReady: function (event) {
@@ -556,8 +542,7 @@
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
 
   window.onYouTubeIframeAPIReady = loadData
-  
-  // Fallback if YT API doesn't load
+
   setTimeout(() => {
     if (!window.YT) {
       loadData()
